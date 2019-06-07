@@ -9,7 +9,7 @@ class Machine(object):
     
     def execute(self, instr):
         instructions = re.match(
-                r'^(?P<op>\w*?)(?P<push_a>a)?(?: (?P<arg1>\w*))(?:, (?P<arg2>\w*))$',
+                r'^(?P<op>\w+?)(?P<push_a>a)?(?: (?P<src>\w*))?(?:, (?P<dest>\w*))?$',
                 instr).groupdict()
         
         if instructions['push_a']:
