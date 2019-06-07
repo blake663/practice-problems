@@ -47,10 +47,13 @@ class Machine(object):
             self.cpu.write_reg(dest, src_val)
             return
         
-        
+        ops = operator.__dict__
+        ops['div'] = ops['floordiv']
+        ops['and'] = ops['and_']
+        ops['or'] = ops['or_']
         result = self.cpu.pop_stack()
         for _ in range(src_val - 1):
-            result = operator.__dict__[op](result, self.cpu.pop_stack())
+            result = ops[op](result, self.cpu.pop_stack())
         self.cpu.write_reg('a', result)
         return
 
