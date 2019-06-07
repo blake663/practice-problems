@@ -24,31 +24,33 @@ class Machine(object):
             if op == 'pop':
                 self.cpu.pop_stack()
             elif op == 'popr':
-                for reg in range('dcba'):
+                for reg in 'dcba':
                     self.cpu.write_reg(reg, self.cpu.pop_stack())
             elif op == 'poprr':
-                for reg in range('abcd'):
+                for reg in 'abcd':
                     self.cpu.write_reg(reg, self.cpu.pop_stack())
-            pass   
-
-            
+            return   
+        
+        
         if op.startswith('push'):
             if op == 'push':
                 self.cpu.write_stack(src_val)
             elif op == 'pushr':
-                for reg in range('abcd'):
+                for reg in 'abcd':
                     self.cpu.write_stack(self.cpu.read_reg(reg))
             elif op == 'pushrr':
-                for reg in range('dcba'):
+                for reg in 'dcba':
                     self.cpu.write_stack(self.cpu.read_reg(reg))
-            pass   
-            
+            return
+        
         if op == 'mov':
             self.cpu.write_reg(dest, src_val)
-            pass
-
+            return
+        
         
         result = self.cpu.pop_stack()
         for _ in range(src_val - 1):
             result = operator.__dict__[op](result, self.cpu.pop_stack())
-        pass
+        self.cpu.write_reg('a', result)
+        return
+
