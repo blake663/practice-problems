@@ -17,12 +17,15 @@ class Machine(object):
         
         op = instructions['op']
         src = instructions['src']
-        src_val = self.cpu.read_reg(src) if src in 'abcd' else int(src)
+        def val(src):
+            return self.cpu.read_reg(src) if src in 'abcd' else int(src)
         dest = instructions['dest']
         
         if op.startswith('pop'):
             if op == 'pop':
-                self.cpu.pop_stack()
+                if src:
+                    self.cpu.write_reg(src, self.cpu.pop_stack())
+                else: self.cpu.pop_stack()
             elif op == 'popr':
                 for reg in 'dcba':
                     self.cpu.write_reg(reg, self.cpu.pop_stack())
@@ -34,7 +37,7 @@ class Machine(object):
         
         if op.startswith('push'):
             if op == 'push':
-                self.cpu.write_stack(src_val)
+                self.cpu.write_stack(val(src))
             elif op == 'pushr':
                 for reg in 'abcd':
                     self.cpu.write_stack(self.cpu.read_reg(reg))
@@ -44,7 +47,7 @@ class Machine(object):
             return
         
         if op == 'mov':
-            self.cpu.write_reg(dest, src_val)
+            self.cpu.write_reg(dest, val(src))
             return
         
         ops = operator.__dict__
@@ -52,8 +55,8 @@ class Machine(object):
         ops['and'] = ops['and_']
         ops['or'] = ops['or_']
         result = self.cpu.pop_stack()
-        for _ in range(src_val - 1):
+        for _ in range(val(src) - 1):
             result = ops[op](result, self.cpu.pop_stack())
-        self.cpu.write_reg('a', result)
+        self.cpu.write_reg(dest if dest else 'a', result)
         return
 
